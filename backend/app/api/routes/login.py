@@ -3,12 +3,17 @@ from datetime import timedelta
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette.requests import Request
 
 from app import crud
-from app.api.deps import CurrentUser, SessionDep, get_current_active_superuser
+from app.api.deps import (
+    CurrentUser,
+    SessionDep,
+    get_current_active_superuser,
+    get_current_user,
+)
 from app.core import security
 from app.core.config import settings
 from app.models import Message, NewPassword, Token, UserPublic
@@ -25,48 +30,12 @@ logger = logging.getLogger(__name__)
 router = APIRouter(tags=["login"])
 
 
-# http://localhost:8000/api/v1/login/github
-@router.get("/login/github")
-async def login_github(request: Request):
-    redirect_uri = request.url_for("auth_github")
-    return await security.oauth.github.authorize_redirect(request, redirect_uri)
-
-
-# http://localhost:8000/api/v1/auth/github
-@router.get("/auth/github")
-async def auth_github(request: Request, session: SessionDep) -> Token:
-    token = await security.oauth.github.authorize_access_token(request)
-    user_info = await security.oauth.github.get("user", token=token)
-    profile = user_info.json()
-
-    # Get primary email
-    emails = await security.oauth.github.get("user/emails", token=token)
-    primary_email = next((e["email"] for e in emails.json() if e["primary"]), None)
-
-    logger.info(f"Primary GitHub email: {primary_email}")
-
-    user = crud.authenticate_github(
-        session=session,
-        github_id=profile["id"],
-        profile=profile,
-        email=primary_email,
-    )
-
-    # Issue JWT token
-    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    return Token(
-        access_token=security.create_access_token(
-            user.id, expires_delta=access_token_expires
-        )
-    )
-
-
 @router.post("/login/access-token")
 def login_access_token(
     session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
-) -> Token:
+) -> JSONResponse:
     """
-    OAuth2 compatible token login, get an access token for future requests
+    OAuth2-compatible token login: get an access token for future requests (sent in an HTTP-only cookie)
     """
     user = crud.authenticate(
         session=session, email=form_data.username, password=form_data.password
@@ -76,11 +45,7 @@ def login_access_token(
     elif not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    return Token(
-        access_token=security.create_access_token(
-            user.id, expires_delta=access_token_expires
-        )
-    )
+    return security.set_auth_cookie(user.id, access_token_expires)
 
 
 @router.post("/login/test-token", response_model=UserPublic)
@@ -161,4 +126,51 @@ def recover_password_html_content(email: str, session: SessionDep) -> Any:
 
     return HTMLResponse(
         content=email_data.html_content, headers={"subject:": email_data.subject}
+    )
+
+
+# get_current_user() throws if user is not logged in
+@router.post("/logout", dependencies=[Depends(get_current_user)])
+def logout() -> JSONResponse:
+    """
+    Delete the HTTP-only cookie during logout
+    """
+    return security.delete_auth_cookie()
+
+
+# Todo: remove Github maybe
+# http://localhost:8000/api/v1/login/github
+@router.get("/login/github")
+async def login_github(request: Request):
+    redirect_uri = request.url_for("auth_github")
+    return await security.oauth.github.authorize_redirect(request, redirect_uri)
+
+
+# Todo: must use cookie
+# http://localhost:8000/api/v1/auth/github
+@router.get("/auth/github")
+async def auth_github(request: Request, session: SessionDep) -> Token:
+    token = await security.oauth.github.authorize_access_token(request)
+    user_info = await security.oauth.github.get("user", token=token)
+    profile = user_info.json()
+
+    # Get primary email
+    emails = await security.oauth.github.get("user/emails", token=token)
+    primary_email = next((e["email"] for e in emails.json() if e["primary"]), None)
+
+    logger.info(f"Primary GitHub email: {primary_email}")
+
+    user = crud.authenticate_github(
+        session=session,
+        github_id=profile["id"],
+        profile=profile,
+        email=primary_email,
+    )
+
+    # Issue JWT token
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    return Token(
+        access_token=security.create_access_token(
+            user.id, expires_delta=access_token_expires
+        )
     )

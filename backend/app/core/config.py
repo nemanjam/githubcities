@@ -32,6 +32,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
     API_V1_STR: str = "/api/v1"
+    AUTH_COOKIE_NAME: str = "auth_cookie"
     # default value if no env
     JWT_SECRET_KEY: str = secrets.token_urlsafe(32)
     SESSION_SECRET_KEY: str = secrets.token_urlsafe(32)

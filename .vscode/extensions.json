@@ -43,7 +43,8 @@
     "tyriar.lorem-ipsum",
     "unifiedjs.vscode-mdx",
     "xyc.vscode-mdx-preview",
-    "yoavbls.pretty-ts-errors"
+    "yoavbls.pretty-ts-errors",
+    "charliermarsh.ruff"
   ],
   "unwantedRecommendations": []
 }
