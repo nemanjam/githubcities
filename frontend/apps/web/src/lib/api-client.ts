@@ -5,6 +5,7 @@ import { PROCESS_ENV } from '@/config/process-env';
 import type { ClientOptions } from '@/client/types.gen';
 
 export default class ApiClient {
+  // Note: Used this just to set API_URL
   private static client = createClient(
     createConfig<ClientOptions>({ baseURL: PROCESS_ENV.NEXT_PUBLIC_API_URL })
   );

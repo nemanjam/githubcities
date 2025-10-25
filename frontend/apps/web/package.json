@@ -10,6 +10,7 @@
     "generate-client": "openapi-ts",
     "standalone": "pnpm cp && node .next/standalone/apps/web/server.js",
     "cp": "cp -r public .next/standalone/apps/web/ && cp -r .next/static .next/standalone/apps/web/.next/",
+    "format": "prettier --write \"**/*.{js,ts,tsx,md,json}\"",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "typecheck": "tsc --noEmit"

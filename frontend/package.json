@@ -10,7 +10,7 @@
     "upg": "find . -name package.json -not -path '*/node_modules/*' -not -path '*/.next/*' -execdir pnpm up --latest \\;",
     "clean": "rm -f pnpm-lock.yaml && find . -type d -name node_modules -prune -exec rm -rf '{}' +",
     "find-nm": "find . -type d -name 'node_modules' ! -path '*/node_modules/*/node_modules'",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "format": "prettier --write \"**/*.{js,ts,tsx,md,json}\"",
     "docker:build:x86": "docker buildx build -f ./Dockerfile -t nemanjamitic/githubcities-frontend --build-arg ARG_SITE_URL_AMD64='githubcities.local.nemanjamitic.com' --platform linux/amd64 ."
   },
   "devDependencies": {

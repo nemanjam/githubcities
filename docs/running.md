@@ -23,6 +23,9 @@ uvicorn app.main:app --reload
 
 # Automatic Interactive Docs (Swagger UI)
 http://localhost:8000/docs
+
+# Run backend tests (cd ./backend)
+bash ./scripts/test.sh
 ```
 
 ## Database

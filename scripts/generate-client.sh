@@ -3,22 +3,19 @@
 set -e
 set -x
 
+# Generate openapi.json with FastAPI
 cd backend
 python -c "import app.main; import json; print(json.dumps(app.main.app.openapi()))" > ../openapi.json
 cd ..
 
-cp openapi.json frontend-nextjs/
-mv openapi.json frontend/apps/web
+# Move to Next.js app root
+mv openapi.json frontend/apps/web/
 
-# Todo: enable later
-# cd frontend/apps/web
-# pnpm run generate-client
-# pnpm exec biome format --write ./client
-# cd ../../../frontend-nextjs
+# Navigate to Next.js app
+cd frontend/apps/web
 
-
-cd frontend-nextjs
+# Generate client
 pnpm run generate-client
-pnpm exec biome format --write ./src/client
 
-cd ..
+# Format client
+pnpm exec prettier --write ./client

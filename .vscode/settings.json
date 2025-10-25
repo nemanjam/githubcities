@@ -5,6 +5,9 @@
     "**/.ruff_cache": true,
     "**/.mypy_cache": true,
     "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/node_modules": true,
+    "**/.next": true,
     "**/.turbo": true
   },
   "search.exclude": {
@@ -12,6 +15,9 @@
     "**/.ruff_cache": true,
     "**/.mypy_cache": true,
     "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/node_modules": true,
+    "**/.next": true,
     "**/.turbo": true
   },
   "files.watcherExclude": {
@@ -19,8 +25,24 @@
     "**/.ruff_cache/**": true,
     "**/.mypy_cache/**": true,
     "**/__pycache__/**": true,
+    "**/.pytest_cache/**": true,
+    "**/node_modules/**": true,
+    "**/.next/**": true,
     "**/.turbo/**": true
   },
+
+  "better-comments.tags": [
+    { "tag": "!", "color": "#FF2D00" },                     // red
+    { "tag": "?", "color": "#3498DB" },                     // blue
+    { "tag": "//", "color": "#474747" },                    // darkgray
+    { "tag": "todo", "color": "#FF8C00" },                  // darkorange
+    { "tag": "*", "color": "#98C379" },                     // green
+    { "tag": "note", "color": "#32CD32", "italic": true },  // limegreen
+    { "tag": "fix", "color": "#FF4500", "strikethrough": true }, // orangered
+    { "tag": "review", "color": "#8A2BE2", "italic": true, "underline": true }, // blueviolet
+    { "tag": "optimize", "color": "#FFD700", "bold": true, "italic": true },   // gold
+    { "tag": "debug", "color": "#FF6347", "strikethrough": true, "underline": true } // tomato
+  ],
 
   "editor.formatOnSave": true,
 
