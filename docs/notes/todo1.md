@@ -1,7 +1,8 @@
 ```ts
-discuss with ChatGpt
-deploy demo, github actions
-add to trafik-proxy repo
+brainstorm with ChatGpt
+        deploy demo, github actions
+        add to trafik-proxy repo
+        separate github login apps and keys
 ---
 multitenant - review examples
 research github css and design system repos

@@ -4,8 +4,6 @@ Todo:
 
 ## Demo
 
-Todo:
-
 **[https://githubcities.arm1.nemanjamitic.com](https://githubcities.arm1.nemanjamitic.com)**
 
 
@@ -28,11 +26,11 @@ https://githubcities.arm1.nemanjamitic.com
 
 # Backend
 http://localhost:8000/docs
-https://api.githubcities.arm1.nemanjamitic.com/docs
+https://api-githubcities.arm1.nemanjamitic.com/docs
 
 # openapi.json
 http://localhost:8000/api/v1/openapi.json
-https://api.githubcities.arm1.nemanjamitic.com/api/v1/openapi.json
+https://api-githubcities.arm1.nemanjamitic.com/api/v1/openapi.json
 ```
 
 ## License
