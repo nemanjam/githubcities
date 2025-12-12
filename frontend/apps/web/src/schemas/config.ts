@@ -10,7 +10,7 @@ type ZodType = typeof z;
 export const getProcessEnvSchemaProps = (z: ZodType) => ({
   NODE_ENV: z.enum(nodeEnvValues),
   SITE_URL: z.url().regex(/[^/]$/, 'SITE_URL should not end with a slash "/"'),
-  API_URL: z.url().regex(/[^/]$/, 'SITE_URL should not end with a slash "/"'),
+  API_URL: z.url().regex(/[^/]$/, 'API_URL should not end with a slash "/"'),
 });
 
 /** For schema type. */
