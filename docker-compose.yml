@@ -1,12 +1,14 @@
 name: full-stack-fastapi-template-nextjs
 
+# development environment
+
 services:
 
   # Todo: improve frontend and test it
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: full-stack-fastapi-template-nextjs-frontend
     restart: unless-stopped
     ports:

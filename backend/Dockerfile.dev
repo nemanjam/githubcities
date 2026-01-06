@@ -20,11 +20,11 @@ ENV UV_COMPILE_BYTECODE=1
 # uv cache mode
 ENV UV_LINK_MODE=copy
 
-# Install project dependencies (prod only, --no-dev)
+# Install project dependencies
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --frozen --no-install-project --no-dev
+    uv sync --frozen --no-install-project
 
 ENV PYTHONPATH=/backend
 
@@ -32,9 +32,9 @@ COPY ./scripts /backend/scripts
 COPY ./pyproject.toml ./uv.lock ./alembic.ini /backend/
 COPY ./app /backend/app
 
-# Sync the project (prod only, --no-dev)
+# Sync the project
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --no-dev
+    uv sync
 
 # Set entrypoint
 ENTRYPOINT ["scripts/entrypoint.sh"]
