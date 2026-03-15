@@ -11,7 +11,7 @@
     "clean": "rm -f pnpm-lock.yaml && find . -type d -name node_modules -prune -exec rm -rf '{}' +",
     "find-nm": "find . -type d -name 'node_modules' ! -path '*/node_modules/*/node_modules'",
     "format": "prettier --write \"**/*.{js,ts,tsx,md,json}\"",
-    "docker:build:x86": "docker buildx build -f ./Dockerfile -t nemanjamitic/full-stack-fastapi-template-nextjs-frontend --platform linux/amd64 ."
+    "docker:build:x86": "docker buildx build -f ./Dockerfile -t nemanjamitic/githubcities-frontend --platform linux/amd64 ."
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.7.0",

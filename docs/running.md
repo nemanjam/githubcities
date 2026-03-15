@@ -54,7 +54,7 @@ Run Postgres container, run migrations and seed the initial data.
 
 ```bash
 # From project root
-cd ~/Desktop/full-stack-fastapi-template-nextjs
+cd ~/Desktop/githubcities
 
 # Run just Postgres database service
 docker compose up -d database adminer
@@ -80,7 +80,7 @@ Generate OpenAPI client and run Next.js dev server.
 
 ```bash
 # From project root, with activated backend/ venv, fix this
-cd ~/Desktop/full-stack-fastapi-template-nextjs
+cd ~/Desktop/githubcities
 
 # Generate client (needs activated venv)
 bash scripts/generate-client.sh
