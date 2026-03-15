@@ -1,28 +1,32 @@
-name: full-stack-fastapi-template-nextjs
+name: githubcities
 
 # development environment
 
 services:
 
-  # Todo: improve frontend and test it
+# Todo: clean up this and test in dev and update traefik-proxy prod
+
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.dev
-    container_name: full-stack-fastapi-template-nextjs-frontend
+      dockerfile: Dockerfile
+    container_name: githubcities-frontend
     restart: unless-stopped
+    env_file:
+      - ./frontend/apps/web/.env
     ports:
       - 3000:3000
     depends_on:
       - backend
     networks:
       - default
+      - proxy
 
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
-    container_name: full-stack-fastapi-template-nextjs-backend
+      dockerfile: Dockerfile.dev
+    container_name: githubcities-backend
     restart: unless-stopped
     # don't mount alembic as volume
     ports:
@@ -33,11 +37,13 @@ services:
       - database
     networks:
       - default
+      - proxy
 
   database:
     image: postgres:17.5-alpine3.22
-    container_name: full-stack-fastapi-template-nextjs-database
+    container_name: githubcities-database
     restart: unless-stopped
+    command: ["postgres", "-p", "5434"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
@@ -46,16 +52,13 @@ services:
       timeout: 10s
     # postgres user 999:999 must own the volume
     # ok in dev, python watch will complain
-    user: '${MY_UID}:${MY_GID}'
-    ports:
-      - '${POSTGRES_PORT}:5432'
+    # user: '${MY_UID}:${MY_GID}'
+    # ports:
+    #   - 5434:5434
     env_file:
       - .env
     environment:
       - PGDATA=/var/lib/postgresql/data/pgdata
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?Variable not set}
-      - POSTGRES_USER=${POSTGRES_USER?Variable not set}
-      - POSTGRES_DB=${POSTGRES_DB?Variable not set}
     volumes:
       - ./backend/data/database:/var/lib/postgresql/data # !without /pgdata
     networks:
@@ -63,23 +66,26 @@ services:
 
   adminer:
     image: adminer:5.4.0-standalone
-    container_name: full-stack-fastapi-template-nextjs-adminer
+    container_name: githubcities-adminer
     restart: unless-stopped
     depends_on:
       - database
     environment:
       - ADMINER_DESIGN=nicu
-    # no networks, no ports
-    network_mode: host
     # change default port
     command: php -S 0.0.0.0:8083 -t /var/www/html
     #
     # must use database:5432, 5433:5432 mapping does not apply
-    # ports:
-    #   - 8080:8080
-    # networks:
-    #   - default
+    ports:
+      - 8083:8083
+    # no networks, no ports
+    # network_mode: host
+    networks:
+      - default
+      - proxy
 
 networks:
   default:
-    driver: bridge
+    internal: true
+  proxy:
+    external: true

@@ -1,6 +1,7 @@
 import logging
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Annotated, Any
+from urllib.parse import urlencode
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -16,7 +17,7 @@ from app.api.deps import (
 )
 from app.core import security
 from app.core.config import settings
-from app.models import Message, NewPassword, UserPublic
+from app.models import Message, NewPassword, Token, UserPublic
 from app.utils import (
     generate_password_reset_token,
     generate_reset_password_email,
@@ -34,7 +35,7 @@ router = APIRouter(tags=["login"])
 @router.post("/login/access-token")
 def login_access_token(
     session: SessionDep, form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
-) -> JSONResponse:
+) -> Token:
     """
     OAuth2-compatible token login: get an access token for future requests (sent in an HTTP-only cookie)
     """
@@ -46,10 +47,20 @@ def login_access_token(
     elif not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
 
-    access_token_expires = timedelta(hours=settings.ACCESS_TOKEN_EXPIRE_HOURS)
-    response = JSONResponse(content={"message": "Login successful"})
+    expires_delta = timedelta(hours=settings.ACCESS_TOKEN_EXPIRE_HOURS)
 
-    return security.set_auth_cookie(user.id, access_token_expires, response)
+    access_token = security.create_access_token(user.id, expires_delta)
+
+    # Absolute expiration Unix time (UTC)
+    expires_at = datetime.now(timezone.utc) + expires_delta
+    expires_timestamp = int(expires_at.timestamp())
+
+    token = Token(
+        access_token=access_token,
+        expires=expires_timestamp,
+    )
+
+    return token
 
 
 @router.post("/login/test-token", response_model=UserPublic)
@@ -187,13 +198,24 @@ async def auth_github_callback(
         profile=profile,
     )
 
-    # Backend must redirect to absolute FRONTEND url
-    # For server redirect must set cookie domain to common subdomain of frontend and backend
-    redirect_url = f"{settings.SITE_URL}/dashboard"
-    response = RedirectResponse(url=redirect_url, status_code=302)
+    expires_delta = timedelta(hours=settings.ACCESS_TOKEN_EXPIRE_HOURS)
 
-    # Set JWT in HttpOnly cookie
-    access_token_expires = timedelta(hours=settings.ACCESS_TOKEN_EXPIRE_HOURS)
-    response = security.set_auth_cookie(user.id, access_token_expires, response)
+    access_token = security.create_access_token(user.id, expires_delta)
+
+    # Absolute expiration timestamp (UTC)
+    expires_at = datetime.now(timezone.utc) + expires_delta
+    expires_timestamp = int(expires_at.timestamp())
+
+    # Build redirect URL to Next.js cookie-setter
+    base_url = f"{settings.SITE_URL}/api/auth/set-cookie"
+    query = urlencode(
+        {
+            "access_token": access_token,
+            "expires": expires_timestamp,
+        }
+    )
+    redirect_url = f"{base_url}?{query}"
+
+    response = RedirectResponse(url=redirect_url, status_code=302)
 
     return response

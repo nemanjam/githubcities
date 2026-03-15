@@ -69,6 +69,7 @@ const config: HeyApiConfig = defineConfig({
     },
     '@hey-api/schemas', // default json, req.body, '{"username":"abc","password":"123"}'
     {
+      // must pin to "@hey-api/openapi-ts": "0.88.0",
       name: '@hey-api/sdk',
       asClass: true, // UsersService.readUserMe(), 'true' doesn't allow tree-shaking
       classNameBuilder: '{{name}}Service', // class Users -> UsersService

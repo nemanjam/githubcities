@@ -3,7 +3,7 @@ from typing import Annotated
 
 import jwt
 from fastapi import Depends, HTTPException, status
-from fastapi.security import APIKeyCookie, OAuth2PasswordBearer
+from fastapi.security import APIKeyCookie
 from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
 from sqlmodel import Session
@@ -13,9 +13,6 @@ from app.core.config import settings
 from app.core.db import engine
 from app.models import TokenPayload, User
 
-reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/login/access-token"
-)
 cookie_scheme = APIKeyCookie(name=settings.AUTH_COOKIE)
 
 
@@ -26,8 +23,6 @@ def get_db() -> Generator[Session, None, None]:
 
 SessionDep = Annotated[Session, Depends(get_db)]
 CookieDep = Annotated[str, Depends(cookie_scheme)]
-
-TokenDep = Annotated[str, Depends(reusable_oauth2)]  # Todo: remove
 
 
 def get_current_user(session: SessionDep, cookie: CookieDep) -> User:

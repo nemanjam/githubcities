@@ -25,5 +25,7 @@ export const ROUTES = {
   API: {
     LOGIN_GITHUB: '/api/v1/login/github/',
     OG_IMAGES: '/api/v1/open-graph/',
+    /** Next.js API proxy route */
+    CLIENT_PROXY: '/api/client-proxy/',
   },
 } as const;

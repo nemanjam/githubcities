@@ -243,6 +243,22 @@ export const PrivateUserCreateSchema = {
   title: 'PrivateUserCreate',
 } as const;
 
+export const TokenSchema = {
+  properties: {
+    access_token: {
+      type: 'string',
+      title: 'Access Token',
+    },
+    expires: {
+      type: 'integer',
+      title: 'Expires',
+    },
+  },
+  type: 'object',
+  required: ['access_token', 'expires'],
+  title: 'Token',
+} as const;
+
 export const UpdatePasswordSchema = {
   properties: {
     current_password: {

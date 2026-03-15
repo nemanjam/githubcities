@@ -19,3 +19,7 @@ export type ApiResult<
           data: undefined;
           error: TError extends Record<string, unknown> ? TError[keyof TError] : TError;
         };
+
+export interface ClientProxyRouteParam {
+  params: Promise<{ path: string[] }>;
+}

@@ -94,6 +94,7 @@
   "tailwindCSS.experimental.configFile": "frontend/packages/ui/src/styles/global.css",
   "cSpell.words": [
     "oklch"
-  ]
-
+  ],
+  "python-envs.defaultEnvManager": "ms-python.python:venv",
+  "python-envs.pythonProjects": []
 }
